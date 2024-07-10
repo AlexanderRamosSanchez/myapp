@@ -17,7 +17,8 @@ class _clientesState extends State<clientes> {
   bool _showActiveClients = true;
   int _selectedIndex = -1; // Track selected index for shading effect
 
-  final urlApi = 'https://ideal-goggles-jx54jvpxvpjc5r59-8080.app.github.dev/api';
+  final urlApi =
+      'https://ideal-goggles-jx54jvpxvpjc5r59-8080.app.github.dev/api';
 
   @override
   void initState() {
@@ -30,6 +31,8 @@ class _clientesState extends State<clientes> {
     if (response.statusCode == 200) {
       setState(() {
         _clientes = jsonDecode(response.body);
+        _clientes.sort(
+            (a, b) => a['names'].compareTo(b['names'])); // Ordenar por nombre
         _filteredClientes = _clientes;
       });
     } else {
@@ -42,6 +45,8 @@ class _clientesState extends State<clientes> {
     if (response.statusCode == 200) {
       setState(() {
         _clientes = jsonDecode(response.body);
+        _clientes.sort(
+            (a, b) => a['names'].compareTo(b['names'])); // Ordenar por nombre
         _filteredClientes = _clientes;
       });
     } else {
@@ -65,7 +70,8 @@ class _clientesState extends State<clientes> {
         _filteredClientes = _clientes;
       });
     } else {
-      throw Exception('Error al eliminar el cliente: ${response.statusCode} ${response.body}');
+      throw Exception(
+          'Error al eliminar el cliente: ${response.statusCode} ${response.body}');
     }
   }
 
@@ -84,9 +90,10 @@ class _clientesState extends State<clientes> {
         _clientes.removeWhere((client) => client['id'] == id);
         _filteredClientes = _clientes;
       });
-      _fetchClientesInac(); // Reload the inactive clients list
+      _fetchClientes(); // Reload the inactive clients list
     } else {
-      throw Exception('Error al activar el cliente: ${response.statusCode} ${response.body}');
+      throw Exception(
+          'Error al activar el cliente: ${response.statusCode} ${response.body}');
     }
   }
 
@@ -132,10 +139,13 @@ class _clientesState extends State<clientes> {
       final name = client['names']?.toLowerCase() ?? '';
       final lastNames = client['lastNames']?.toLowerCase() ?? '';
       final email = client['email']?.toLowerCase() ?? '';
-      final typeDocument = client['typeDocument']?.toLowerCase() ?? ''; 
+      final typeDocument = client['typeDocument']?.toLowerCase() ?? '';
       final searchLower = query.toLowerCase();
 
-      return name.contains(searchLower) || lastNames.contains(searchLower) || email.contains(searchLower) || typeDocument.contains(searchLower);
+      return name.contains(searchLower) ||
+          lastNames.contains(searchLower) ||
+          email.contains(searchLower) ||
+          typeDocument.contains(searchLower);
     }).toList();
 
     setState(() {
@@ -183,15 +193,21 @@ class _clientesState extends State<clientes> {
                 itemBuilder: (context, index) {
                   final client = _filteredClientes[index];
                   return Material(
-                    color: _selectedIndex == index ? Colors.grey.withOpacity(0.2) : Colors.transparent,
+                    color: _selectedIndex == index
+                        ? Colors.grey.withOpacity(0.2)
+                        : Colors.transparent,
                     child: InkWell(
                       onTap: () {
-                        Navigator.of(context).push(
+                        Navigator.of(context)
+                            .push(
                           MaterialPageRoute(
-                            builder: (context) => ClientFormPage(client: client),
+                            builder: (context) =>
+                                ClientFormPage(client: client),
                           ),
-                        ).then((value) {
-                          if (value == true) _fetchClientes(); // Refresh list if needed
+                        )
+                            .then((value) {
+                          if (value == true)
+                            _fetchClientes(); // Refresh list if needed
                         });
                       },
                       onLongPress: () {
@@ -201,7 +217,8 @@ class _clientesState extends State<clientes> {
                       },
                       child: Card(
                         color: Colors.white,
-                        margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                        margin: EdgeInsets.symmetric(
+                            vertical: 8.0, horizontal: 16.0),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15.0),
                         ),
@@ -231,15 +248,20 @@ class _clientesState extends State<clientes> {
                           trailing: PopupMenuButton(
                             onSelected: (value) async {
                               if (value == 'editar') {
-                                Navigator.of(context).push(
+                                Navigator.of(context)
+                                    .push(
                                   MaterialPageRoute(
-                                    builder: (context) => ClientFormPage(client: client),
+                                    builder: (context) =>
+                                        ClientFormPage(client: client),
                                   ),
-                                ).then((value) {
-                                  if (value == true) _fetchClientes(); // Refresh list if needed
+                                )
+                                    .then((value) {
+                                  if (value == true)
+                                    _fetchClientes(); // Refresh list if needed
                                 });
                               } else if (value == 'eliminar') {
-                                final confirmed = await _showConfirmationDialog(context, 'eliminar');
+                                final confirmed = await _showConfirmationDialog(
+                                    context, 'eliminar');
                                 if (confirmed == true) {
                                   if (_showActiveClients) {
                                     deleteCliente(client['id']);
@@ -248,7 +270,8 @@ class _clientesState extends State<clientes> {
                                   }
                                 }
                               } else if (value == 'activar') {
-                                final confirmed = await _showConfirmationDialog(context, 'activar');
+                                final confirmed = await _showConfirmationDialog(
+                                    context, 'activar');
                                 if (confirmed == true) {
                                   activarCliente(client['id']);
                                 }
@@ -261,8 +284,12 @@ class _clientesState extends State<clientes> {
                                   value: 'editar',
                                 ),
                                 PopupMenuItem(
-                                  child: Text(_showActiveClients ? 'Eliminar' : 'Activar'),
-                                  value: _showActiveClients ? 'eliminar' : 'activar',
+                                  child: Text(_showActiveClients
+                                      ? 'Eliminar'
+                                      : 'Activar'),
+                                  value: _showActiveClients
+                                      ? 'eliminar'
+                                      : 'activar',
                                 ),
                               ];
                             },
@@ -281,11 +308,13 @@ class _clientesState extends State<clientes> {
         backgroundColor: Color(0xff881736),
         child: const Icon(Icons.add, color: Color.fromARGB(255, 245, 239, 239)),
         onPressed: () {
-          Navigator.of(context).push(
+          Navigator.of(context)
+              .push(
             MaterialPageRoute(
               builder: (context) => ClientFormPage(),
             ),
-          ).then((value) {
+          )
+              .then((value) {
             if (value == true) _fetchClientes(); // Refresh list if needed
           });
         },
